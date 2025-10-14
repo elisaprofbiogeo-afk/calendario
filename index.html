@@ -306,13 +306,13 @@
             const { year, week } = getCurrentYearWeek();
             if (!text) {
                 // Suppression si vide
-                await fetch('/api/reservations', {
+                await fetch('/api/reserve', {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ year, week, day_of_week: day, time_slot: slot })
                 });
             } else {
-                await fetch('/api/reservations', {
+                await fetch('/api/reserve', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ year, week, day_of_week: day, time_slot: slot, text })
