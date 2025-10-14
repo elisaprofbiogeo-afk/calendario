@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Créneaux fixes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f7f7f7; }
+        h1 { color: #2c3e50; text-align: center; }
+        .info { 
+            text-align: center; 
+            color: #7f8c8d; 
+            margin: 20px auto; 
+            max-width: 900px;
+        }
+        .back-link {
+            text-align: center;
+            margin: 20px;
+        }
+        .back-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            max-width: 900px; 
+            margin: 20px auto; 
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: center; 
+        }
+        th { 
+            background-color: #e74c3c; 
+            color: white; 
+            font-weight: bold;
+        }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .recreo {
+            background-color: #f39c12 !important;
+            color: white;
+            font-weight: bold;
+        }
+        .horarios {
+            background-color: #ecf0f1;
+            font-weight: bold;
+        }
+        .editable-cell {
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-height: 40px;
+            position: relative;
+        }
+        .editable-cell:hover {
+            background-color: #e8f4f8 !important;
+        }
+        .editable-cell.has-content {
+            background-color: #95a5a6 !important;
+            color: white;
+            font-weight: bold;
+        }
+        input.cell-input {
+            width: 90%;
+            padding: 5px;
+            border: 2px solid #3498db;
+            font-size: 14px;
+        }
+        .save-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .cancel-btn {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Administration - Créneaux fixes</h1>
+    <div class="info">
+        <p>Cliquez sur une case pour définir un créneau fixe qui sera identique chaque semaine.</p>
+        <p>Les créneaux fixes ne pourront pas être modifiés sur la page principale.</p>
+    </div>
+    <div class="back-link">
+        <a href="index.html">← Retour à l'horaire principal</a>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Horarios</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="horarios">8h25 - 9h20</td>
+                <td class="editable-cell" data-day="0" data-slot="8h25-9h20"></td>
+                <td class="editable-cell" data-day="1" data-slot="8h25-9h20"></td>
+                <td class="editable-cell" data-day="2" data-slot="8h25-9h20"></td>
+                <td class="editable-cell" data-day="3" data-slot="8h25-9h20"></td>
+                <td class="editable-cell" data-day="4" data-slot="8h25-9h20"></td>
+            </tr>
+            <tr>
+                <td class="horarios">9h20 - 10h15</td>
+                <td class="editable-cell" data-day="0" data-slot="9h20-10h15"></td>
+                <td class="editable-cell" data-day="1" data-slot="9h20-10h15"></td>
+                <td class="editable-cell" data-day="2" data-slot="9h20-10h15"></td>
+                <td class="editable-cell" data-day="3" data-slot="9h20-10h15"></td>
+                <td class="editable-cell" data-day="4" data-slot="9h20-10h15"></td>
+            </tr>
+            <tr>
+                <td class="horarios">10h15 - 11h10</td>
+                <td class="editable-cell" data-day="0" data-slot="10h15-11h10"></td>
+                <td class="editable-cell" data-day="1" data-slot="10h15-11h10"></td>
+                <td class="editable-cell" data-day="2" data-slot="10h15-11h10"></td>
+                <td class="editable-cell" data-day="3" data-slot="10h15-11h10"></td>
+                <td class="editable-cell" data-day="4" data-slot="10h15-11h10"></td>
+            </tr>
+            <tr class="recreo">
+                <td>11h10 - 11h35</td>
+                <td colspan="5">RECREO</td>
+            </tr>
+            <tr>
+                <td class="horarios">11h35 - 12h30</td>
+                <td class="editable-cell" data-day="0" data-slot="11h35-12h30"></td>
+                <td class="editable-cell" data-day="1" data-slot="11h35-12h30"></td>
+                <td class="editable-cell" data-day="2" data-slot="11h35-12h30"></td>
+                <td class="editable-cell" data-day="3" data-slot="11h35-12h30"></td>
+                <td class="editable-cell" data-day="4" data-slot="11h35-12h30"></td>
+            </tr>
+            <tr>
+                <td class="horarios">12h30 - 13h25</td>
+                <td class="editable-cell" data-day="0" data-slot="12h30-13h25"></td>
+                <td class="editable-cell" data-day="1" data-slot="12h30-13h25"></td>
+                <td class="editable-cell" data-day="2" data-slot="12h30-13h25"></td>
+                <td class="editable-cell" data-day="3" data-slot="12h30-13h25"></td>
+                <td class="editable-cell" data-day="4" data-slot="12h30-13h25"></td>
+            </tr>
+            <tr>
+                <td class="horarios">13h25 - 14h20</td>
+                <td class="editable-cell" data-day="0" data-slot="13h25-14h20"></td>
+                <td class="editable-cell" data-day="1" data-slot="13h25-14h20"></td>
+                <td class="editable-cell" data-day="2" data-slot="13h25-14h20"></td>
+                <td class="editable-cell" data-day="3" data-slot="13h25-14h20"></td>
+                <td class="editable-cell" data-day="4" data-slot="13h25-14h20"></td>
+            </tr>
+            <tr class="recreo">
+                <td>14h20 - 14h35</td>
+                <td colspan="5">RECREO</td>
+            </tr>
+            <tr>
+                <td class="horarios">14h35 - 15h30</td>
+                <td class="editable-cell" data-day="0" data-slot="14h35-15h30"></td>
+                <td class="editable-cell" data-day="1" data-slot="14h35-15h30"></td>
+                <td class="editable-cell" data-day="2" data-slot="14h35-15h30"></td>
+                <td class="editable-cell" data-day="3" data-slot="14h35-15h30"></td>
+                <td class="editable-cell" data-day="4" data-slot="14h35-15h30"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        let fixedSlots = [];
+        let editingCell = null;
+
+        async function loadFixedSlots() {
+            try {
+                const response = await fetch('/api/fixed-slots');
+                fixedSlots = await response.json();
+                renderSchedule();
+            } catch (err) {
+                console.error('Erreur lors du chargement des créneaux fixes:', err);
+            }
+        }
+
+        function renderSchedule() {
+            const cells = document.querySelectorAll('.editable-cell');
+            cells.forEach(cell => {
+                const day = parseInt(cell.dataset.day);
+                const slot = cell.dataset.slot;
+                
+                const fixedSlot = fixedSlots.find(
+                    s => s.day_of_week === day && s.time_slot === slot
+                );
+                
+                if (fixedSlot && fixedSlot.subject) {
+                    cell.innerHTML = `
+                        ${fixedSlot.subject}
+                        <button class="delete-btn" onclick="deleteSlot(${day}, '${slot}')">✕</button>
+                    `;
+                    cell.classList.add('has-content');
+                } else {
+                    cell.textContent = '';
+                    cell.classList.remove('has-content');
+                }
+            });
+        }
+
+        async function deleteSlot(day, slot) {
+            if (!confirm('Supprimer ce créneau fixe ?')) return;
+            
+            try {
+                const response = await fetch('/api/fixed-slots', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ day_of_week: day, time_slot: slot })
+                });
+                
+                if (response.ok) {
+                    await loadFixedSlots();
+                } else {
+                    alert('Erreur lors de la suppression');
+                }
+            } catch (err) {
+                alert('Erreur: ' + err.message);
+            }
+        }
+
+        async function saveSlot(day, slot, subject) {
+            try {
+                const response = await fetch('/api/fixed-slots', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        day_of_week: day, 
+                        time_slot: slot, 
+                        subject: subject 
+                    })
+                });
+                
+                if (response.ok) {
+                    await loadFixedSlots();
+                } else {
+                    alert('Erreur lors de la sauvegarde');
+                }
+            } catch (err) {
+                alert('Erreur: ' + err.message);
+            }
+        }
+
+        function startEdit(cell) {
+            if (editingCell) return;
+            
+            editingCell = cell;
+            const day = parseInt(cell.dataset.day);
+            const slot = cell.dataset.slot;
+            
+            const fixedSlot = fixedSlots.find(
+                s => s.day_of_week === day && s.time_slot === slot
+            );
+            const currentValue = fixedSlot ? fixedSlot.subject : '';
+            
+            cell.innerHTML = `
+                <input type="text" class="cell-input" value="${currentValue}" placeholder="Matière...">
+                <br>
+                <button class="save-btn" onclick="finishEdit(true)">✓ Guardar</button>
+                <button class="cancel-btn" onclick="finishEdit(false)">✗ Cancelar</button>
+            `;
+            
+            const input = cell.querySelector('input');
+            input.focus();
+            input.select();
+            
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') finishEdit(true);
+                if (e.key === 'Escape') finishEdit(false);
+            });
+        }
+
+        async function finishEdit(save) {
+            if (!editingCell) return;
+            
+            const cell = editingCell;
+            const day = parseInt(cell.dataset.day);
+            const slot = cell.dataset.slot;
+            const input = cell.querySelector('input');
+            
+            if (save && input) {
+                const subject = input.value.trim();
+                if (subject) {
+                    await saveSlot(day, slot, subject);
+                }
+            }
+            
+            editingCell = null;
+            renderSchedule();
+        }
+
+        // Event listeners
+        document.querySelectorAll('.editable-cell').forEach(cell => {
+            cell.addEventListener('click', (e) => {
+                if (e.target.classList.contains('delete-btn')) return;
+                if (!editingCell) startEdit(cell);
+            });
+        });
+
+        // Initialize
+        loadFixedSlots();
+    </script>
+</body>
+</html>

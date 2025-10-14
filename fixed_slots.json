@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "day_of_week": 2,
+    "time_slot": "8h25-9h20",
+    "subject": "Prácticas rotativas"
+  },
+  {
+    "id": 2,
+    "day_of_week": 2,
+    "time_slot": "9h20-10h15",
+    "subject": "Miryam 3ºA"
+  },
+  {
+    "id": 3,
+    "day_of_week": 2,
+    "time_slot": "10h15-11h10",
+    "subject": "Blén 2ºBI"
+  },
+  {
+    "id": 4,
+    "day_of_week": 1,
+    "time_slot": "9h20-10h15",
+    "subject": "Botánica Aplicada"
+  },
+  {
+    "id": 5,
+    "day_of_week": 1,
+    "time_slot": "10h15-11h10",
+    "subject": "Elisa Geología"
+  },
+  {
+    "id": 6,
+    "day_of_week": 1,
+    "time_slot": "11h35-12h30",
+    "subject": "Belén 2ºBI"
+  },
+  {
+    "id": 7,
+    "day_of_week": 1,
+    "time_slot": "12h30-13h25",
+    "subject": "Raquel Anatomía"
+  },
+  {
+    "id": 8,
+    "day_of_week": 0,
+    "time_slot": "13h25-14h20",
+    "subject": "Belén 2ºBI"
+  },
+  {
+    "id": 9,
+    "day_of_week": 2,
+    "time_slot": "11h35-12h30",
+    "subject": "Belén 2ºBI"
+  },
+  {
+    "id": 10,
+    "day_of_week": 2,
+    "time_slot": "12h30-13h25",
+    "subject": "Prácticas rotativas"
+  },
+  {
+    "id": 11,
+    "day_of_week": 3,
+    "time_slot": "10h15-11h10",
+    "subject": "Botánica Aplicada"
+  },
+  {
+    "id": 12,
+    "day_of_week": 3,
+    "time_slot": "11h35-12h30",
+    "subject": "Belén 2ºBI"
+  },
+  {
+    "id": 13,
+    "day_of_week": 3,
+    "time_slot": "12h30-13h25",
+    "subject": "Prácticas rotativas"
+  },
+  {
+    "id": 14,
+    "day_of_week": 4,
+    "time_slot": "13h25-14h20",
+    "subject": "Miryam 3ºB"
+  },
+  {
+    "id": 15,
+    "day_of_week": 4,
+    "time_slot": "9h20-10h15",
+    "subject": "Raquel/Elisa 4ºESO Proyecto"
+  }
+]

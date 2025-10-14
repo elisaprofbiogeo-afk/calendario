@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Horarios de clase</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f7f7f7; }
+        h1 { color: #2c3e50; text-align: center; }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            max-width: 900px; 
+            margin: 20px auto; 
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: center; 
+        }
+        th { 
+            background-color: #3498db; 
+            color: white; 
+            font-weight: bold;
+        }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #e8f4f8; }
+        .recreo {
+            background-color: #f39c12 !important;
+            color: white;
+            font-weight: bold;
+        }
+        .horarios {
+            background-color: #ecf0f1;
+            font-weight: bold;
+        }
+        .fixed-slot {
+            background-color: #95a5a6 !important;
+            color: white;
+            font-weight: bold;
+            cursor: not-allowed;
+        }
+        .editable-slot {
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-width: 80px;
+            min-height: 32px;
+            position: relative;
+        }
+        .editable-slot:hover {
+            background-color: #d5e8f3 !important;
+        }
+        .editable-slot.editing {
+            background: #fffbe6 !important;
+        }
+        .slot-input {
+            width: 90%;
+            padding: 4px;
+            font-size: 14px;
+        }
+        .slot-btns {
+            margin-top: 2px;
+        }
+        .slot-save, .slot-cancel {
+            font-size: 12px;
+            margin: 0 2px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: none;
+            cursor: pointer;
+        }
+        .slot-save { background: #27ae60; color: #fff; }
+        .slot-cancel { background: #aaa; color: #fff; }
+        .week-selector {
+            text-align: center;
+            margin: 20px auto;
+            max-width: 900px;
+        }
+        .week-selector button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .week-selector button:hover {
+            background-color: #2980b9;
+        }
+        .week-selector span {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Horarios de la semana</h1>
+    <div class="week-selector">
+        <button id="prevWeek">◀ Anterior</button>
+        <span id="weekDisplay"></span>
+        <button id="nextWeek">Siguiente ▶</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Horarios</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+            </tr>
+        </thead>
+        <tbody id="scheduleBody">
+            <tr>
+                <td class="horarios">8h25 - 9h20</td>
+                <td data-day="0" data-slot="8h25-9h20"></td>
+                <td data-day="1" data-slot="8h25-9h20"></td>
+                <td data-day="2" data-slot="8h25-9h20"></td>
+                <td data-day="3" data-slot="8h25-9h20"></td>
+                <td data-day="4" data-slot="8h25-9h20"></td>
+            </tr>
+            <tr>
+                <td class="horarios">9h20 - 10h15</td>
+                <td data-day="0" data-slot="9h20-10h15"></td>
+                <td data-day="1" data-slot="9h20-10h15"></td>
+                <td data-day="2" data-slot="9h20-10h15"></td>
+                <td data-day="3" data-slot="9h20-10h15"></td>
+                <td data-day="4" data-slot="9h20-10h15"></td>
+            </tr>
+            <tr>
+                <td class="horarios">10h15 - 11h10</td>
+                <td data-day="0" data-slot="10h15-11h10"></td>
+                <td data-day="1" data-slot="10h15-11h10"></td>
+                <td data-day="2" data-slot="10h15-11h10"></td>
+                <td data-day="3" data-slot="10h15-11h10"></td>
+                <td data-day="4" data-slot="10h15-11h10"></td>
+            </tr>
+            <tr class="recreo">
+                <td>11h10 - 11h35</td>
+                <td colspan="5">RECREO</td>
+            </tr>
+            <tr>
+                <td class="horarios">11h35 - 12h30</td>
+                <td data-day="0" data-slot="11h35-12h30"></td>
+                <td data-day="1" data-slot="11h35-12h30"></td>
+                <td data-day="2" data-slot="11h35-12h30"></td>
+                <td data-day="3" data-slot="11h35-12h30"></td>
+                <td data-day="4" data-slot="11h35-12h30"></td>
+            </tr>
+            <tr>
+                <td class="horarios">12h30 - 13h25</td>
+                <td data-day="0" data-slot="12h30-13h25"></td>
+                <td data-day="1" data-slot="12h30-13h25"></td>
+                <td data-day="2" data-slot="12h30-13h25"></td>
+                <td data-day="3" data-slot="12h30-13h25"></td>
+                <td data-day="4" data-slot="12h30-13h25"></td>
+            </tr>
+            <tr>
+                <td class="horarios">13h25 - 14h20</td>
+                <td data-day="0" data-slot="13h25-14h20"></td>
+                <td data-day="1" data-slot="13h25-14h20"></td>
+                <td data-day="2" data-slot="13h25-14h20"></td>
+                <td data-day="3" data-slot="13h25-14h20"></td>
+                <td data-day="4" data-slot="13h25-14h20"></td>
+            </tr>
+            <tr class="recreo">
+                <td>14h20 - 14h35</td>
+                <td colspan="5">RECREO</td>
+            </tr>
+            <tr>
+                <td class="horarios">14h35 - 15h30</td>
+                <td data-day="0" data-slot="14h35-15h30"></td>
+                <td data-day="1" data-slot="14h35-15h30"></td>
+                <td data-day="2" data-slot="14h35-15h30"></td>
+                <td data-day="3" data-slot="14h35-15h30"></td>
+                <td data-day="4" data-slot="14h35-15h30"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        let currentWeekOffset = 0;
+    let fixedSlots = [];
+    let weekReservations = [];
+    let editingCell = null;
+
+        function getMonday(d) {
+            d = new Date(d);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(d.setDate(diff));
+        }
+
+        function addDays(date, days) {
+            const result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        async function loadFixedSlots() {
+            try {
+                const response = await fetch('/api/fixed-slots');
+                fixedSlots = await response.json();
+                updateSchedule();
+            } catch (err) {
+                console.error('Erreur lors du chargement des créneaux fixes:', err);
+            }
+        }
+
+        function updateSchedule() {
+            // Réinitialiser toutes les cellules
+            const cells = document.querySelectorAll('td[data-day][data-slot]');
+            cells.forEach(cell => {
+                const day = parseInt(cell.dataset.day);
+                const slot = cell.dataset.slot;
+                // Chercher si c'est un créneau fixe
+                const fixedSlot = fixedSlots.find(
+                    s => s.day_of_week === day && s.time_slot === slot
+                );
+                if (fixedSlot) {
+                    cell.textContent = fixedSlot.subject || 'FIXE';
+                    cell.className = 'fixed-slot';
+                    cell.onclick = null;
+                } else {
+                    // Chercher si une réservation existe pour cette semaine
+                    const res = weekReservations.find(r => r.day_of_week == day && r.time_slot == slot);
+                    cell.className = 'editable-slot';
+                    cell.innerHTML = res && res.text ? `<span>${res.text}</span>` : '';
+                    cell.onclick = () => startEdit(cell, day, slot, res ? res.text : '');
+                }
+            });
+        }
+
+        function getCurrentYearWeek() {
+            const today = new Date();
+            const monday = getMonday(today);
+            const refMonday = addDays(monday, currentWeekOffset * 7);
+            const year = refMonday.getFullYear();
+            // Numéro de semaine ISO
+            const temp = new Date(refMonday.getTime());
+            temp.setHours(0,0,0,0);
+            temp.setDate(temp.getDate() + 3 - ((temp.getDay() + 6) % 7));
+            const week1 = new Date(temp.getFullYear(),0,4);
+            return {
+                year: refMonday.getFullYear(),
+                week: 1 + Math.round(((refMonday.getTime() - week1.getTime()) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7)
+            };
+        }
+
+        async function loadWeekReservations() {
+            const { year, week } = getCurrentYearWeek();
+            try {
+                const response = await fetch(`/api/reservations?year=${year}&week=${week}`);
+                weekReservations = await response.json();
+                updateSchedule();
+            } catch (err) {
+                weekReservations = [];
+                updateSchedule();
+            }
+        }
+
+        function startEdit(cell, day, slot, currentText) {
+            if (editingCell) return;
+            editingCell = cell;
+            cell.classList.add('editing');
+            cell.innerHTML = `<input class="slot-input" type="text" value="${currentText || ''}" maxlength="40" />
+                <div class="slot-btns">
+                    <button class="slot-save">OK</button>
+                    <button class="slot-cancel">Annuler</button>
+                </div>`;
+            const input = cell.querySelector('.slot-input');
+            input.focus();
+            input.select();
+            cell.querySelector('.slot-save').onclick = async (e) => {
+                e.stopPropagation();
+                await saveSlot(day, slot, input.value.trim());
+            };
+            cell.querySelector('.slot-cancel').onclick = (e) => {
+                e.stopPropagation();
+                cancelEdit();
+            };
+            input.onkeydown = async (e) => {
+                if (e.key === 'Enter') {
+                    await saveSlot(day, slot, input.value.trim());
+                } else if (e.key === 'Escape') {
+                    cancelEdit();
+                }
+            };
+        }
+
+        async function saveSlot(day, slot, text) {
+            const { year, week } = getCurrentYearWeek();
+            if (!text) {
+                // Suppression si vide
+                await fetch('/api/reservations', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ year, week, day_of_week: day, time_slot: slot })
+                });
+            } else {
+                await fetch('/api/reservations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ year, week, day_of_week: day, time_slot: slot, text })
+                });
+            }
+            editingCell = null;
+            await loadWeekReservations();
+        }
+
+        function cancelEdit() {
+            editingCell = null;
+            updateSchedule();
+        }
+
+        function updateWeekDisplay() {
+            const today = new Date();
+            const referenceMonday = getMonday(today);
+            const monday = addDays(referenceMonday, currentWeekOffset * 7);
+            const friday = addDays(monday, 4);
+
+            const weekText = `Semana del ${formatDate(monday)} al ${formatDate(friday)}`;
+            document.getElementById('weekDisplay').textContent = weekText;
+
+            // Update table headers with dates
+            const headers = document.querySelectorAll('thead th');
+            for (let i = 1; i <= 5; i++) {
+                const dayDate = addDays(monday, i - 1);
+                const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+                headers[i].textContent = `${dayNames[i - 1]}\n${formatDate(dayDate)}`;
+            }
+            // Charger les réservations de la semaine
+            loadWeekReservations();
+        }
+
+        document.getElementById('prevWeek').addEventListener('click', () => {
+            currentWeekOffset--;
+            updateWeekDisplay();
+        });
+
+        document.getElementById('nextWeek').addEventListener('click', () => {
+            currentWeekOffset++;
+            updateWeekDisplay();
+        });
+
+        // Initialize
+        loadFixedSlots();
+        updateWeekDisplay();
+    </script>
+</body>
+</html>
