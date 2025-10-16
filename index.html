@@ -186,30 +186,63 @@
     </table>
 
     <script>
-        let currentWeekOffset = 0;
+
+    let currentWeekOffset = 0;
     let fixedSlots = [];
     let weekReservations = [];
     let editingCell = null;
 
-        function getMonday(d) {
-            d = new Date(d);
-            const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-            return new Date(d.setDate(diff));
-        }
+    // --- Lógica de fecha de admin.html adaptada ---
+    // Devuelve el lunes de la semana ISO (week, year)
 
-        function addDays(date, days) {
-            const result = new Date(date);
-            result.setDate(result.getDate() + days);
-            return result;
-        }
+    // Devuelve el lunes de la semana mostrada según el offset
+    function getMondayOfCurrentWeek() {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    // getDay(): 0=domingo, 1=lunes, ..., 6=sábado
+    let dayOfWeek = today.getDay();
+    // ISO: lunes=1, ..., domingo=0; diff = days since Monday
+    let diff = (dayOfWeek + 6) % 7;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - diff + currentWeekOffset * 7);
+    monday.setHours(0,0,0,0);
+    // Debug: mostrar el lunes calculado y el día actual
+    console.log('DEBUG getMondayOfCurrentWeek:', {
+        today: today.toISOString().slice(0,10),
+        monday: monday.toISOString().slice(0,10),
+        currentWeekOffset
+    });
+    return monday;
+    }
 
-        function formatDate(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
+    // Devuelve la fecha yyyy-mm-dd para la columna data-day
+    function getDateForDay(day) {
+    const monday = getMondayOfCurrentWeek();
+    // Sumar días en local time
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + parseInt(day, 10));
+    d.setHours(0,0,0,0);
+    // Devolver fecha local yyyy-mm-dd
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const dayStr = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${dayStr}`;
+    }
+
+    function formatDate(date) {
+        // Si date es string tipo yyyy-mm-dd, parsear como local
+        let d;
+        if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            const [y, m, day] = date.split('-');
+            d = new Date(Number(y), Number(m) - 1, Number(day));
+        } else {
+            d = new Date(date);
         }
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
 
         async function loadFixedSlots() {
             try {
@@ -221,57 +254,103 @@
             }
         }
 
-        function updateSchedule() {
-            // Réinitialiser toutes les cellules
-            const cells = document.querySelectorAll('td[data-day][data-slot]');
-            cells.forEach(cell => {
-                const day = parseInt(cell.dataset.day);
-                const slot = cell.dataset.slot;
-                // Chercher si c'est un créneau fixe
-                const fixedSlot = fixedSlots.find(
-                    s => s.day_of_week === day && s.time_slot === slot
-                );
-                if (fixedSlot) {
-                    cell.textContent = fixedSlot.subject || 'FIXE';
-                    cell.className = 'fixed-slot';
-                    cell.onclick = null;
-                } else {
-                    // Chercher si une réservation existe pour cette semaine
-                    const res = weekReservations.find(r => r.day_of_week == day && r.time_slot == slot);
-                    cell.className = 'editable-slot';
-                    cell.innerHTML = res && res.text ? `<span>${res.text}</span>` : '';
-                    cell.onclick = () => startEdit(cell, day, slot, res ? res.text : '');
+
+
+    function updateSchedule() {
+        // Limpiar todas las celdas
+        const cells = document.querySelectorAll('td[data-day][data-slot]');
+        // Debug: mostrar todas las reservas de la semana
+        console.log('DEBUG weekReservations:', JSON.stringify(weekReservations, null, 2));
+        cells.forEach(cell => {
+            const day = parseInt(cell.dataset.day);
+            const slot = cell.dataset.slot;
+            const cellDate = getDateForDay(day);
+            // Debug: mostrar el mapeo de columna
+            console.log('DEBUG updateSchedule cell:', { day, slot, cellDate });
+            // ¿Es un slot fijo?
+            const fixedSlot = fixedSlots.find(
+                s => s.day_of_week === day && s.time_slot === slot
+            );
+            if (fixedSlot) {
+                cell.textContent = fixedSlot.subject || 'FIXE';
+                cell.className = 'fixed-slot';
+                cell.onclick = null;
+            } else {
+                // Debug: mostrar la fecha de la celda y la reserva encontrada
+                // Print all reservation dates for this slot
+                const slotReservations = weekReservations.filter(r => r.time_slot === slot);
+                console.log('DEBUG cell match:', {
+                    cellDate,
+                    slot,
+                    slotReservations: slotReservations.map(r => r.date),
+                    res: slotReservations.find(r => r.date === cellDate)
+                });
+                const res = slotReservations.find(r => r.date === cellDate);
+                cell.className = 'editable-slot';
+                let debugInfo = `<div style='font-size:10px;color:#888;'>${cellDate}</div>`;
+                if (res && res.text) {
+                    debugInfo += `<div style='font-size:10px;color:#c00;'>res: ${res.date} - ${res.text}</div>`;
                 }
-            });
-        }
-
-        function getCurrentYearWeek() {
-            const today = new Date();
-            const monday = getMonday(today);
-            const refMonday = addDays(monday, currentWeekOffset * 7);
-            const year = refMonday.getFullYear();
-            // Numéro de semaine ISO
-            const temp = new Date(refMonday.getTime());
-            temp.setHours(0,0,0,0);
-            temp.setDate(temp.getDate() + 3 - ((temp.getDay() + 6) % 7));
-            const week1 = new Date(temp.getFullYear(),0,4);
-            return {
-                year: refMonday.getFullYear(),
-                week: 1 + Math.round(((refMonday.getTime() - week1.getTime()) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7)
-            };
-        }
-
-        async function loadWeekReservations() {
-            const { year, week } = getCurrentYearWeek();
-            try {
-                const response = await fetch(`/api/reservations?year=${year}&week=${week}`);
-                weekReservations = await response.json();
-                updateSchedule();
-            } catch (err) {
-                weekReservations = [];
-                updateSchedule();
+                cell.innerHTML = (res && res.text ? `<span>${res.text}</span>` : '') + debugInfo;
+                cell.onclick = () => {
+                    startEdit(cell, day, slot, res ? res.text : '');
+                };
             }
+        });
+    }
+
+    function getCurrentYearWeek() {
+    // Usar exactamente la misma lógica de getMondayOfCurrentWeek
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    let dayOfWeek = today.getDay();
+    let diff = (dayOfWeek + 6) % 7;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - diff + currentWeekOffset * 7);
+    monday.setHours(0,0,0,0);
+    // Ahora obtener el año y semana ISO de ese lunes
+    const year = monday.getFullYear();
+    // Calcular el jueves de esa semana para obtener el año ISO
+    const thursday = new Date(monday);
+    thursday.setDate(monday.getDate() + 3);
+    const isoYear = thursday.getFullYear();
+    // Calcular el primer jueves del año ISO
+    const firstThursday = new Date(isoYear, 0, 4);
+    firstThursday.setDate(firstThursday.getDate() + 3 - ((firstThursday.getDay() + 6) % 7));
+    const week = 1 + Math.round(((thursday - firstThursday) / 86400000) / 7);
+    return { year: isoYear, week };
+    }
+
+    async function loadWeekReservations() {
+        const { year, week } = getCurrentYearWeek();
+        try {
+            const response = await fetch(`/api/reservations?year=${year}&week=${week}`);
+            const data = await response.json();
+            // Filtrar solo reservas con time_slot válido y sumar un día a la fecha
+            weekReservations = data
+                .filter(r => r.time_slot)
+                .map(r => {
+                    let date = r.date || '';
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+                        const d = new Date(date);
+                        d.setDate(d.getDate() + 1);
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const dayStr = String(d.getDate()).padStart(2, '0');
+                        date = `${year}-${month}-${dayStr}`;
+                    }
+                    return {
+                        date,
+                        time_slot: r.time_slot,
+                        text: r.name
+                    };
+                });
+            updateSchedule();
+        } catch (err) {
+            weekReservations = [];
+            updateSchedule();
         }
+    }
 
         function startEdit(cell, day, slot, currentText) {
             if (editingCell) return;
@@ -281,6 +360,7 @@
                 <div class="slot-btns">
                     <button class="slot-save">OK</button>
                     <button class="slot-cancel">Annuler</button>
+                    ${currentText ? '<button class="slot-delete" title="Borrar">✕</button>' : ''}
                 </div>`;
             const input = cell.querySelector('.slot-input');
             input.focus();
@@ -293,6 +373,13 @@
                 e.stopPropagation();
                 cancelEdit();
             };
+            const deleteBtn = cell.querySelector('.slot-delete');
+            if (deleteBtn) {
+                deleteBtn.onclick = async (e) => {
+                    e.stopPropagation();
+                    await saveSlot(day, slot, '');
+                };
+            }
             input.onkeydown = async (e) => {
                 if (e.key === 'Enter') {
                     await saveSlot(day, slot, input.value.trim());
@@ -303,32 +390,20 @@
         }
 
         async function saveSlot(day, slot, text) {
-            const { year, week } = getCurrentYearWeek();
-            // Calcular la fecha concreta (YYYY-MM-DD) para el día y semana seleccionados
-            function getDateOfISOWeek(week, year, dayOfWeek) {
-                const simple = new Date(year, 0, 1 + (week - 1) * 7);
-                const dow = simple.getDay();
-                const ISOweekStart = simple;
-                if (dow <= 4)
-                    ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
-                else
-                    ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
-                ISOweekStart.setDate(ISOweekStart.getDate() + dayOfWeek);
-                return ISOweekStart.toISOString().slice(0, 10);
-            }
-            const date = getDateOfISOWeek(week, year, day);
+            // Usar la fecha exacta de la columna clicada
+            const date = getDateForDay(day);
+            console.log('DEBUG saveSlot:', { day, date, slot, text });
             if (!text) {
-                // Suppression si vide
                 await fetch('/api/reserve', {
-                    method: 'DELETE',
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ date })
+                    body: JSON.stringify({ date, time_slot: slot, _method: 'DELETE' })
                 });
             } else {
                 await fetch('/api/reserve', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: text, date })
+                    body: JSON.stringify({ name: text, date, time_slot: slot })
                 });
             }
             editingCell = null;
@@ -340,25 +415,26 @@
             updateSchedule();
         }
 
-        function updateWeekDisplay() {
-            const today = new Date();
-            const referenceMonday = getMonday(today);
-            const monday = addDays(referenceMonday, currentWeekOffset * 7);
-            const friday = addDays(monday, 4);
+    function updateWeekDisplay() {
+        // Mostrar la semana actual (lunes-viernes) usando hora local
+        const monday = getMondayOfCurrentWeek();
+        const friday = new Date(monday);
+        friday.setDate(monday.getDate() + 4);
 
-            const weekText = `Semana del ${formatDate(monday)} al ${formatDate(friday)}`;
-            document.getElementById('weekDisplay').textContent = weekText;
+        const weekText = `Semana del ${formatDate(monday)} al ${formatDate(friday)}`;
+        document.getElementById('weekDisplay').textContent = weekText;
 
-            // Update table headers with dates
-            const headers = document.querySelectorAll('thead th');
-            for (let i = 1; i <= 5; i++) {
-                const dayDate = addDays(monday, i - 1);
-                const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
-                headers[i].textContent = `${dayNames[i - 1]}\n${formatDate(dayDate)}`;
-            }
-            // Charger les réservations de la semaine
-            loadWeekReservations();
+        // Actualizar cabeceras de tabla con las fechas usando hora local
+        const headers = document.querySelectorAll('thead th');
+        const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+        for (let i = 0; i < 5; i++) {
+            const dayDate = new Date(monday);
+            dayDate.setDate(monday.getDate() + i);
+            headers[i + 1].textContent = `${dayNames[i]}\n${formatDate(dayDate)}`;
         }
+        // Cargar reservas de la semana
+        loadWeekReservations();
+    }
 
         document.getElementById('prevWeek').addEventListener('click', () => {
             currentWeekOffset--;
