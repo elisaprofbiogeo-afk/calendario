@@ -328,25 +328,14 @@
         try {
             const response = await fetch(`/api/reservations?year=${year}&week=${week}`);
             const data = await response.json();
-            // Filtrar solo reservas con time_slot válido y sumar un día a la fecha
+            // Filtrar solo reservas con time_slot válido (sin sumar días)
             weekReservations = data
                 .filter(r => r.time_slot)
-                .map(r => {
-                    let date = r.date || '';
-                    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-                        const d = new Date(date);
-                        d.setDate(d.getDate() + 1);
-                        const year = d.getFullYear();
-                        const month = String(d.getMonth() + 1).padStart(2, '0');
-                        const dayStr = String(d.getDate()).padStart(2, '0');
-                        date = `${year}-${month}-${dayStr}`;
-                    }
-                    return {
-                        date,
-                        time_slot: r.time_slot,
-                        text: r.name
-                    };
-                });
+                .map(r => ({
+                    date: r.date || '',
+                    time_slot: r.time_slot,
+                    text: r.name
+                }));
             updateSchedule();
         } catch (err) {
             weekReservations = [];
