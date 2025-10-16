@@ -287,10 +287,12 @@
                 });
                 const res = slotReservations.find(r => r.date === cellDate);
                 cell.className = 'editable-slot';
-                let debugInfo = `<div style='font-size:10px;color:#888;'>${cellDate}</div>`;
-                if (res && res.text) {
-                    debugInfo += `<div style='font-size:10px;color:#c00;'>res: ${res.date} - ${res.text}</div>`;
-                }
+                let debugInfo = '';
+                // Si quieres mostrar info de debug, descomenta abajo:
+                // debugInfo = `<div style='font-size:10px;color:#888;'>${cellDate}</div>`;
+                // if (res && res.text) {
+                //     debugInfo += `<div style='font-size:10px;color:#c00;'>res: ${res.date} - ${res.text}</div>`;
+                // }
                 cell.innerHTML = (res && res.text ? `<span>${res.text}</span>` : '') + debugInfo;
                 cell.onclick = () => {
                     startEdit(cell, day, slot, res ? res.text : '');
